@@ -21,7 +21,7 @@ void create (int ind, string t){
 		return;
 	}
 	int pos = ind*2; 
-	for (int i = pos; i <= pos+1; i++){
+	for (int i = pos; i <= pos + 1; i++){
 		for (int j = pos; j <= pos+1; j++){
 			u = min (a[i], b[j]);
 			create (ind+1, t+u);
