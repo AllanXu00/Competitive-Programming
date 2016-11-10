@@ -1,0 +1,129 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int main() {
+	int ax, ay, bx, by, cx, cy, x, y, ans, stale, poor;
+	queue <pair < pair <int, int> , int> > q;
+	pair< pair<int,int> , int> a;
+	cin >> poor;
+	bool st, win, loss;
+	bool visit [110][110];
+	
+	for (int j = 0; j < poor; j++)
+	{
+	
+	st=false;
+	win=false;
+	loss = false;
+	cin >> cy >> cx >> by >> bx >> ay >> ax; 
+	bool visit [110][110] = {false};
+	a.first.first = ax;
+	a.first.second = ay; 
+	a.second = 0;
+	q.push(a);
+	
+	while (!q.empty())
+	{
+		
+		x = q.front().first.first;
+		y = q.front().first.second;
+		ans = q.front().second;
+		q.pop();
+		
+		
+		if (x > cx || x < 1 || y > cy || y < 1)
+		{
+			continue;
+		}
+		if (visit[x][y]==true)
+		{
+			continue;
+		}
+		if (x==bx&&y==by+ans)
+		{
+			cout <<"Win in "<< ans <<" knight move(s)." << endl;
+			win = true;
+			break;
+			
+		}
+		if (x==bx&&y==by+ans+1&&st==false)
+		{
+			st = true;
+			stale = ans;
+			
+		}
+		if(by+ans+1==cy)
+		{
+			
+			loss = true;
+			break;
+		}
+		if (ans>2)
+		{
+		visit [x][y]=true;
+		}
+		
+		
+		a.first.first = x+2;
+		a.first.second = y+1; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x+2;
+		a.first.second = y-1; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x+1;
+		a.first.second = y+2; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x+1;
+		a.first.second = y-2; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x-1;
+		a.first.second = y+2; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x-1;
+		a.first.second = y-2; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x-2;
+		a.first.second = y+1; 
+		a.second = ans+1;
+		q.push(a);
+		
+		a.first.first = x-2;
+		a.first.second = y-1; 
+		a.second = ans+1;
+		q.push(a);
+		
+	}
+	
+	if (st==true&&win==false)
+	{
+		cout << "Stalemate in " << stale <<" knight move(s)." << endl;
+	}
+	else if (st==false&&win==false)
+	
+	{
+	
+		cout << "Loss in " << ans << " knight move(s)." << endl;
+	}
+	//cout << x << "-" << y << "-" << ans <<  endl;
+	while (!q.empty())
+	{
+		q.pop();
+	}
+	
+}
+	
+	return 0;
+}
