@@ -1,0 +1,584 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{esvect}
+\usepackage{pgfplots}
+\usepackage{algpseudocode}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm2e}
+\RestyleAlgo{boxruled}
+\makeatletter
+\algdef{SE}[SUBALG]{Indent}{EndIndent}{}{\algorithmicend\ }%
+\algtext*{Indent}
+\algtext*{EndIndent}
+
+\begin{document}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+\newcommand{\ndiv}{\hspace{-4pt}\not|\hspace{2pt}}
+\begin{center}
+\section*{CS 170: 3 Page Cheat Sheet}
+\end{center}
+\begin{multicols}{2}
+\section*{Run Time Analysis}
+\textbf{Master's Theorem} \newline 
+Assuming the relation is in the form: $T[n] = a \cdot T[\frac{n}{b}] + O(n^c)$ \newline 
+Case 1: $c < \log_b a \Longrightarrow O(n^{\log_b a})$ \newline 
+Case 2: $c = \log_b a \Longrightarrow O(n^c \log_2 n)$ \newline 
+Case 3: $c > \log_b a \Longrightarrow O(n^c)$ \newline \\
+\textbf{Asymptotic Analysis} \\
+$$\lim_{n \to \infty} \frac{f(n)}{g(n)} = \begin{cases} 
+      0 & f(n) \in O(g(n)) \\
+      c > 0 & f(n) \in \Theta(g(n))\\
+      \infty & f(n) \in \Omega(g(n))
+   \end{cases}$$
+\textbf{Recurrence Relation} \\
+In other cases, draw out tree and use summations to compute run time. First sum the total runtime per layer, then sum the layers. 
+\section*{Fast Fourier Transform (FFT)}
+\textbf{Complex Numbers} \newline 
+All numbers have a real and imaginary component: \newline 
+For operations, treat $i$ as a variable and $i^2 = -1$ \newline 
+Polar Form: $(a, b) \to (r, \theta), r = \sqrt{a^2 + a^2}, a = r \cdot cos \theta, b = r \cdot sin \theta$ \newline 
+$n$th roots of unity (1) are: $S = \{1, \omega, \omega^2 \ldots w^{n-1}\}, \forall x \in S, x^n = 1$ \newline 
+$4$th roots of unity are: $S = \{1, -1, i, -i\}$ \newline 
+$n$th roots of unity = n equally spaced points on a circle \newline 
+$w^t = e^{\frac{2 \pi i}{n} \cdot t} = \cos{\frac{2 \pi t}{n}} + i \cdot \sin{\frac{2 \pi t}{n}}$ \newline 
+$a + ib \equiv \sqrt{a^2 + b^2} \cdot e^{i \theta} \equiv re^{i \theta}$ \newline 
+$(r_1 e^{i \theta_1}) \cdot (r_2 e^{i \theta_2}) = (r_1 r_2) e^{i (\theta_1 + \theta_2)}$ \newline
+\textbf{Fourier Transform} \newline 
+Given a time domain vector, return the frequency domain vector (discrete FFT). \newline  
+$[a_0, a_1, \ldots a_n{n-1}]^T \to [A[1], A[2], \ldots A[n-1]]$ \newline 
+Inverse FFT converts frequency domain vector to time domain vector. \newline
+Given vector/polynomial, pad with zeroes until size is a power of 2 \newline 
+\underline{Example} \newline 
+Input: $(a_0, a_1, a_2, a_3) = (1, 2, 3, 4)$ \newline 
+Evaluate $A[x] = 1 + 2x + 3x^2 + 4x^3$ at 4th roots of unity \newline 
+Return vector is $[A[1], A[\omega], \ldots A[\omega^{n-1}]]^T$ \newline
+\textbf{Transformation Matrices} \\ 
+FT Transformation Matrix (4th root of unity): \\ 
+$$\left[
+\begin{array}{ccccc}
+\omega^0 & \omega^0 & \omega^0 & \omega^0 \\ 
+\omega^0 & \omega^1 & \omega^2 & \omega^3 \\ 
+\omega^0 & \omega^2 & \omega^4 & \omega^6 \\
+\omega^0 & \omega^3 & \omega^6 & \omega^9 
+\end{array}
+\right]
+$$
+FT Inverse Matrix (4th root of unity): \\ 
+$$\left[
+\begin{array}{ccccc}
+\omega^0 & \omega^0 & \omega^0 & \omega^0 \\ 
+\omega^0 & \omega^{-1} & \omega^{-2} & \omega^{-3} \\ 
+\omega^0 & \omega^{-2} & \omega^{-4} & \omega^{-6} \\
+\omega^0 & \omega^{-3} & \omega^{-6} & \omega^{-9} 
+\end{array}
+\right]
+$$
+\textbf{Fast Fourier Transform} \newline 
+\underline{Runtime:} $O(N \log N)$ \newline 
+Lets once again define $A[x] = a_1 + a_1 \cdot x + a_2 \cdot x^2 \ldots$ \newline 
+Define $O[y] = a_1 + 3 \cdot y + a_5 \cdot y^5 \ldots$ \newline 
+Define $E[y] = a_0 + a_2 \cdot y + a_4 \cdot y^2 \ldots$ \newline 
+We know that $A[x] = E[x^2] + x \cdot O[x^2]$ \newline 
+We know that squaring the $n$th roots of unity gives the $\frac{n}{2}$ roots of unity, so we can keep using this method to keep dividing the polynomials. \newline 
+This complexity is captured by: $2 \cdot T[\frac{n}{2}] + O(n) \Longrightarrow T[n] = n \cdot \log{n}$ \newline
+\textbf{Inverse Fast Fourier Transform (iFFT)} \newline 
+iFFT returns $[a_0, a_1, \ldots a_{n-1}]^T$ given $[A[0], A[1], \ldots A[n-1]]^T$ \newline 
+This idea is best captured by comparing FFT with iFFT \newline 
+FFT: $A[w^l] = \sum_{j=0}^{n-1} a_j \cdot (\omega^l)^j$ \newline 
+iFFT: $a_l = \frac{1}{n} \sum_{j=0}^{n-1} A[\omega^j] \cdot (w^{-l})^j$ \newline
+\textbf{Polynomial Multiplication} \newline 
+We can use FFT and iFFT to multiply polynomials in $O(N \log N)$ time. \newline 
+Given: $A(x) = a_0 + a_1 \cdot x \ldots a_n \cdot x^n$ and $B(x) = b_0 + b_0 \cdot x \ldots b_n \cdot x^n$
+Return: Coefficients of $C(x) = A(x) \cdot B(x)$ \newline 
+Observation: $C(x) = A(x) \cdot B(x) \Longrightarrow C(\omega^i) = A(\omega^i) \cdot B(\omega^i)$ \newline 
+Run FFT on A and B to find $[A[0], A[1] \ldots A[n-1]]$ and $[B[0], B[1], \ldots B[n-1]]$ \\
+Compute $C = [A[0] \cdot B[0], A[1] \cdot B[1], \ldots A[n-1] \cdot B[n-1]]$ \\
+Use iFFT on $C$ to return the coefficients of $C$. \\
+Keep in mind that when doing polynomial multiplication we should take $2d+1$ points from $A. B$ since that's how many points $C$ will have. 
+\section*{Graph Theory}
+\textbf{Topological Sort/Linearization} \newline 
+Let each node represent a task, and an edge from $u \to v$ means that $u$ has to be completed before $v$. \newline 
+A topological sort is an ordering on how to order the completion of a task. A topological sort can't exist if there's a cycle. There can be more than one valid topological sort. \\ \\
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Toplogical Sort, $O(|E| + |V|)$}\label{euclid}
+\begin{algorithmic}[1]
+\State $visited =$ boolean array, all false, indexed by vertices
+\State $L =$ empty list
+\State def explore(v):
+\Indent
+\State $visited[v] = true$
+\State for each neighbor $w$ of $v$: 
+\Indent 
+\State if not $visited[w]$: 
+\Indent 
+\State $explore(w)$
+\EndIndent 
+\State $L = [v] + L$
+\EndIndent
+\EndIndent
+\State def DFS:
+\Indent
+\State for each vertex $v$: 
+\Indent 
+\State if not $visited[v]$: 
+\Indent 
+\State $explore(v)$
+\EndIndent 
+\EndIndent
+\State return $L$
+\EndIndent
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+
+\underline{Proof} \\ \\
+\underline{Proof}\\
+We need to prove that for every edge $u \to v$ in a DAG, the algorithm will always return a list where $u$ appears before $v$ by proving explore($v$) will always terminate before explore($u$). \\
+Case 1: explore($u$) is called when visited[$v$] is false. In this case, explore($v$) will be called inside explore($u$) and explore($v$) would terminate before explore ($u$) since you only return to explore($u$) after explore($v$) terminates. \\
+Case 2: explore($u$) is called when visited[$v$] is true. In this case, explore($v$) must've already terminated (since you can't reach $u$ from $v$ by the DAG properties). \\ \\
+\underline{Runtime:} From lecture we know runtime is $O(|E| + |V|)$ \\ \\
+\textbf{Connected Components}\\
+Iterate through every node. If the node has not been visited, increment the count by one and run DFS/explore from that node. Output count at the end. This runs in $O(E + V)$ time. \\ \\
+\textbf{Strongly Connected Component (Kosaraju's)} \\
+$G^R = G$ with all edges reversed \\
+L = output of linearization/topological sort algorithm on $G^R$ \\
+Run CC algorithm on G, enumerating vertices as in L \\
+Every node reached from a given node is part of the same SCC \\ 
+\underline{Proof}\\
+Let's define $S, T$ as SCC in G with $\geq 1$ edges from $S \to T$. We know the first vertex of $S$ in $L$ cimes before the first vertex of $T$ (if there were also edges from $T \to S$ then they would be part of same SCC). If a vertex of $S$ is explored first it will explore all of $S$ and $T$ before it terminates. If a vertex of $T$ is explored first, all of T will be explored before $S$. Since we are topological sorting the reverse of $G$ we ensure we visit the "sink" SCC first. \\ 
+\textbf{Dijkstra's Shortest Path Algorithm} \\
+Given a graph $G$ and a source node, determine the distance from the source node to every node in the graph. \\ \\
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Dijkstra, $O((|E| + |V|) \cdot \log |V|)$}\label{euclid}
+\begin{algorithmic}[1]
+\State $prev =$ array indexed by vertices initialized to null 
+\State $dist =$ array indexed by vertices initialized to $\infty$
+\State $Q =$ priority queue of vertices indexed by $dist$
+\State $dist[s] = 0$
+\State for each $v$: 
+\Indent 
+\State $Q.insert(v)$
+\EndIndent 
+\State while $Q$ is not empty
+\Indent 
+\State $v = Q.delete-min()$
+\State for each $w \in$ neighbour of $v$: 
+\Indent 
+\State if $dist[w] > dist[v] + l(v, w)$: 
+\Indent 
+\State $dist[w] = dist[v] + l(v, w)$
+\State $Q.decrease-key(w)$
+\State $prev[w] = v$
+\EndIndent 
+\EndIndent 
+\EndIndent
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+\underline{Proof:} \\
+Base Case: The distance to the source node is 0. \\
+Hypothesis: At the end of each iteration of the while loop, the following conditions hold (1) there is a value $d$ such that all nodes in $Q$ are at distance $\leq d$ from $s$ and all nodes outside $Q$ are at distance $\geq d$ from $s$, and (2) for every node $u$, the value $dist(u)$ is the length of the shortest parth from $s$ to $u$ whose intermediate nodes are constrained to be in $R$ (if no such path exists, the value is $\infty$). \\
+Step: Within each iteration of the while loop, we remove a node and $d$ is now the dist from the source to that node. Since we are using a priority queue, we know every node previously outside $Q$ will have a smaller distance and all nodes still in $Q$ will have a larger distance. We know that dist[$u$] must be the smallest possible value, otherwise it would have been removed form the priority queue sooner. \\ \\
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Bellman Ford, $O(|E| \cdot |V|)$}\label{euclid}
+\begin{algorithmic}[1]
+\State def update($(u, v) \in E$):
+\Indent 
+\State dist(v) = min($dist(v), dist(u) + l(u, v)$)
+\EndIndent 
+\State for all $u \in V$:
+\Indent 
+\State dist(u) = $\infty$
+\State prev(u) = nil
+\EndIndent 
+\State dist(s) = 0 
+\State repeat $|V| -1$ times:
+\Indent 
+\State for all $e \in E$:
+\Indent 
+\State update($e$)
+\EndIndent 
+\EndIndent 
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+\textbf{Shortest Path on DAGs} \\
+We can run bellman ford on DAGs in the order of a topological sort (linearization). 
+\section*{Greedy Algorithms}
+\textbf{Exchange Argument} \newline 
+1. Outline two possible solutions, A which is generated by your algorithm and $O$ which is any arbitrary solution (prove how if $O \neq A$ it can be further optimized). \newline 
+2. Compare greedy solution with optimal solution. Either there is an element in one but not the other, or there are 2 consecutive elements in $O$ in a different other than in $A$. \newline 
+3. Exchange, swap the elements in $O$ to make it more similar to $A$ and prove how this makes $O$ more optimal. \newline  \newline 
+\textbf{Minimum Spanning Tree} \\
+Kruskal's finds the MST of a graph in $O(E \log V) \equiv O(E \log E)$ time by iterating over the edges in ascending order of weight and including edges which don't add a cycle. Prim's follows a similar idea to Dijkstra's to achieve the same task in $O(E \log V)$, however, using Fibonacci heap its runtime can be improve to $O(E + \log V)$. \newline 
+\textbf{Cut Property:} Edges $X$ are part MST. In a subset of nodes $S$ where $X$ does not cross between $S$ and $V-S$ and $e$ is the lightest edge across this partition, $X \cup e$ is part of some MST. 
+\setlength{\textfloatsep}{0.1cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Huffman Encoding, $O(N \log N)$}\label{euclid}
+\begin{algorithmic}[1]
+\State let $H$ be a priority queue of integers, ordered by $f$
+\State for $i = 1$ to $n$: insert($H, i$)
+\State for $k = n+1$ to $2n-1$: 
+\Indent 
+\State$i = deletemin(H), j = deletemin(H)$
+\State create a node numbered $k$ with children $i, j$
+\State $insert(H, k)$
+\EndIndent
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+Method of encoding a given message uniquely using the smallest possible number of bits. Assigning high frequency strings to small integers, low-frequency strings to large integers, both encoded in binary. Binary representations of all integers used can't share prefixes. 
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Horn Formula}\label{euclid}
+\begin{algorithmic}[1]
+\State Set everything to false
+\State While $\exists$ implication that's not satisfied
+\Indent
+\State Set the right-hand variable of implication to true
+\EndIndent
+\State if all pure negative clauses are satisfied: return assignment 
+\State else: return "formula is not satisfiable"
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+Retruns a satisfying assignment to a set of clauses of 2 kinds: (1) Implications, left is $\wedge$ of any variables, and right is one variable (2) cause consisting only of $\neg x_i$ and $\vee$. \newline
+\textbf{Set Coverage} \newline 
+Given town's where each town has coverage of certain towns, what's the smallest number of schools needed to be placed such that a school covers every town. The following algorithm will output a solution $\leq k \cdot \ln n$ sets where $k$ is the idela solution and $n$ is the number of towns. 
+
+\section*{Dynamic Programming}
+\textbf{Basics} \newline 
+1. Base case \newline 
+2. Subproblem we are solving \newline 
+3. Transition (how we solve each sub-problem) \newline 
+4. Dependency (DAG modeling) \\
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Floyd-Warshall, $O(|V^3|)$}\label{euclid}
+\begin{algorithmic}[1]
+\State for $i = 1$ to $n$:
+\Indent 
+\State for $j = 1$ to $n$: 
+\Indent 
+\State $dist(i, j, 0) = \infty$
+\EndIndent 
+\EndIndent 
+\State for all $(i, j) \in E: dist(i, j, 0) = l(i, j)$
+\State for $k = 1$ to $n$: 
+\Indent 
+\State for $i = 1$ to $n$:
+\Indent 
+\State for $j = 1$ to $n$: 
+\Indent 
+\State $tmp = dist(i,k,k-1)+dist(k, j, k-1)$
+\State $dist(i,j,k)=\min{tmp,dist(i,j,k-1)}$
+\EndIndent 
+\EndIndent 
+\EndIndent 
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{DP Shortest Path in DAG, $O(|E| + |V|)$}\label{euclid}
+\begin{algorithmic}[1]
+\State initialize all dist(.) values to $\infty$
+\State dist(s) = 0
+\State for each $v \in V, v \neq s$ in linearized order:
+\Indent
+\State $dist(v) = \min_{(u, v) \in E} dist(u) + l(u, v)$
+\EndIndent
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+Linearize the DAG and run one iteration of Bellman Ford in a linearized order. Dist(v) represents minimum distance from $s$ to $v$. \newline
+%Longest Increasing Sub-Sequence 
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Longest Increasing Sub-Sequence, $O(N^2)$}\label{euclid}
+\begin{algorithmic}[1]
+\State for $j = 1, 2, \ldots, n$
+\Indent
+\State $L(j) = 1 + \max\{L(i):(i, j)\in E\}$
+\EndIndent
+\State return $\max_j L(j)$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+The longest increasing Sub sequence problem reduces to the Longest Path in a DAG problem which reduces to the Shortest Path in a DAG problem. Each element is a node with edges to all greater elements with a greater index. 
+%Edit Distance 
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Edit Distance, $O(N \cdot M)$}\label{euclid}
+\begin{algorithmic}[1]
+\State for $i = 0, 1, 2, \ldots, m$: 
+\Indent
+\State $E(i, 0) = i$
+\EndIndent
+\State for $j = 0, 1, 2, \ldots, n$: 
+\Indent
+\State $E(0, j) = j$
+\EndIndent
+\State for $i = 0, 1, 2, \ldots, m$: 
+\Indent 
+\State for $j = 0, 1, 2, \ldots, n$: 
+\Indent 
+\State $delete = E(i-1, j) +1$
+\State $insert = E(i, j-1) + 1$
+\State $change = E(i-1, j-1) + 1$
+\State $E(i, j) = \min(delete, insert, change)$
+\EndIndent 
+\EndIndent 
+\State return $E(m, n)$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+Minimum number of steps to change one string to another with either insertion, deletion, or mutation. E(i, j) represents minimum steps to convert first $i$ characters of string 1 to first $j$ characters of string 2. 
+
+%Knapsack
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Knapsack with repetition, $O(n \cdot W)$}\label{euclid}
+\begin{algorithmic}[1]
+\State K(0) = 0
+\State for $w = 1$ to $W$: 
+\Indent 
+\State K(w) = $\max(K(w-w_i) + v_i: w_i \leq w)$
+\EndIndent 
+\State return $K(W)$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Knapsack without repetition, $O(n \cdot W)$}\label{euclid}
+\begin{algorithmic}[1]
+\State Initialize all $K(0, j) = 0$ and all $K(w, 0) = 0$
+\State for $j = 1$ to $n$: 
+\Indent 
+\State for $w = 1$ to $W$ : 
+\Indent 
+\State if $w_j > w: K(w, j) = K(w, j-1)$ 
+\State else: 
+\Indent 
+\State $take = K(w-w_j, j-1) + v_j)$
+\State $ignore = K(w, j-1)$
+\State $K(w, j) = \max(take, ignore)$
+\EndIndent 
+\EndIndent 
+\EndIndent 
+\State return $K(W, n)$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+%Chain Matrix Multiplication 
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Chain Matrix Multiplication, $O(n^3)$}\label{euclid}
+\begin{algorithmic}[1]
+\State for $i = 1$ to $n: C(i, i) = 0$
+\State for $s = 1$ to $n - 1$: 
+\Indent 
+\State for $i = 1$ to $n-s$: 
+\Indent 
+\State $j = i + s$ 
+\State $\forall (i \leq k < j)$ 
+\State $C(i, j) = \min(C(i, k) + C(k+1, j) + m_{i-1} \cdot m_k \cdot m_j)$
+\EndIndent 
+\EndIndent 
+\State return $C(1, n)$
+\end{algorithmic}
+\end{algorithm}
+
+\setlength{\floatsep}{0.0cm}
+%Traveling Salesman
+\setlength{\textfloatsep}{0.0cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Traveling Salesman Problem, $O(n^2 \cdot 2^n)$}\label{euclid}
+\begin{algorithmic}[1]
+\State $C(\{1\}, 1) = 0$ 
+\State for $s = 2$ to $n:$ 
+\Indent
+\State for all subsets, S, of $|S| = s$ and $1 \in S$: 
+\Indent 
+\State $C(S, 1) = \infty$
+\State for all $j \in S, j \neq 1$: 
+\Indent 
+\State $C(S, j) = \min\{C(S-\{j\},i) + d_{i, j}: i \in S, i \neq j\}$
+\EndIndent 
+\EndIndent 
+\EndIndent 
+\State return $\min_j C(\{1, \ldots, n\}, j) + d_{j, 1}$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm}
+\section*{Linear Programming}
+Maximizing/Minimizing an objective function while satisfying a set of constraints. We can solve linear problems using the \textbf{Simplex Method} which considers all optimal adjacent vertices until a maxima is found. \newline
+\textbf{Variants} \newline
+1.We can interchange maximization and minimization with a coefficient of $-1$.\newline  
+2.a) $\sum_{i=1}^n a_i x_i \leq b \Longrightarrow \sum_{i=1}^n a_i x_i + s = b (s \geq 0)$ \newline 
+2.b) $ax = b \Longrightarrow ax \leq b, ax \geq b$ \newline 
+3.Unbounded $x \equiv x^+ - x^-, (x^+, x^- \geq 0)$ \newline 
+By applying these transformations we can convert any LP into standard form where all variables are non-negative, the constrains are all equations, and the objective function is to be minimized. \newline 
+\textbf{Max Flow} \newline 
+1.No edge violates capacities: $0 \leq f_e \leq c_e \forall e \in E$ \newline 
+2.All nodes except $s, t$ are conserving: \newline $\sum_{(w, u)\in E} f_{wu} = \sum_{(v, z) \in E} f_{uz}$ \newline 
+The size of the flow is equal to the quantity leaving s:  $\sum_{(s, u)\in E}f_{su}$ \newline 
+Max-Flow reduces to linear programming. Add constraints for non-negativity, edge capacity, and flow conservation at each node. Maximize the flow leaving the source (reaching the sink). \newline 
+\textbf{Ford Fulkerson} \newline 
+1. Start with zero flow \newline 
+2. Repeat: chose an appropriate path from $s$ to $t$, and increase flow along the edges of this path as much as possible. Add back edges to allow flow along an edge to be decreased later. These back edges will be considered in future iterations. \newline 
+3. $O(EF)$ time complexity $E$ is edges, $F$ is max flow.
+4.Sensible optimization gives us $O(|V| \cdot |E|^2)$ \newline 
+\textbf{Min Cut} \newline 
+An $(s, t)$ cut is defined as the sum of capacity of the edges between any two arbitrary sets of nodes $u, v$ such that every node appears once, $s$ is in $u$ and $t$ is in $v$. The min cut is defined as the smallest $(s, t)$ cut and the maximum flow in the network is equal to the min cut. \newline 
+\textbf{Bipartite Matching} \newline 
+Given two sets of nodes and the possible partners of every node, maximize the total number of partners (e.g. boys and girls that like each other). Create a source connected to each boy with capacity 1, and have each boy connected to each girl they like with capacity 1, and each girl connected to the sink. The max-flow is equivalent to the maximum number of pairs. \textbf{If all the edge capacities are integers, the max-flow with be an integer}. \newline 
+\textbf{Duality} \newline 
+If a linear program has a bounded optimum, then so does its dual, and the two values are equal. To find this, assign coefficients to each of the inequalities/constraints such that the side with the variables is equal to the objective function, and the restriction on this is as tight as possible. The tightest restriction possible, will indicate that the solution we found is optimal. We can assign these coefficients by using LP with the coefficients as the variables and trying to minimize the constraint. \newline
+\textbf{Zero Sum Games} \newline 
+If both players in a matrix game play optimally, the order in which they chose strategies does not matter. This is because the LP solution that optimizes outcome for both players are dual to one another. \newline 
+$$\max_x \min_y \sum_{i, j} G_{i, j} \cdot x_i \cdot y_j = \min_y \max_x \sum_{i, j} G_{i, j} \cdot x_i \cdot y_j$$
+\textbf{Simplex} \newline 
+Simple traverses each vertex starting from the origin and continues updating the optimum by looking at the current optimum's neighbors, starting with the origin as the optimum. A vertex is a unique point that is feasible and satisfies a subset of $n$ inequalities. Two vertices are neighbours if they have $n-1$ defining inequalities in common. We can transform the coordinate system such that the optimum is always at the origin. 
+\section*{Multiplicative Weights}
+\textbf{Problem: }Over the span of $T$ days, every day try to minimize loss calculated by $\sum_i x_i^{(t)} \cdot l_i^{(t)}$ where $L^{(t)}$ is a predetermined set of values unknown to the user and $X^{(t)}$ can be thought of as a probability distribution determined by the user. We aim to get the \textbf{Overall Loss}, $\sum_{t=1}^{T} \sum_{i=1}^{n} x_i^{(t)} \cdot l_i^{(t)}$, as close to the \textbf{Offline Optimum}, $\min_{x} \sum_{t=1}^{T} \sum_{i=1}^{n} x_i \cdot l_i^{(t)} = \min_i \sum_{t=1}^T l_i^{(t)}$, as possible. \textbf{Regret} is defined as the difference between the overall loss and the offline optimum or $\sum_{t=1}^{T} \sum_{i=1}^{n} x_i^{(t)} \cdot l_i^{(t)} - \min_{x} \sum_{t=1}^{T} \sum_{i=1}^{n} x_i \cdot l_i^{(t)}$\\
+\textbf{Algorithm: }Let $w_i^{(t)}$ represent the preference for the $i$th person at the $t$th time step. $w_i^{(t)} = 1$ and $w_i^{(t+1)} = w_i^{(t)} \cdot (1 - \epsilon)^{l_i^{(t)}}$. We determine $X^{(t)}$ by computing $x_i^{(t)} = \frac{w_i^{(t)}}{\sum_j w_j^{(t)}}$. \\
+\textbf{Theorem 1:} If all loses are in the range $[0, 1]$ and $0 < \epsilon < \frac{1}{2}$, the regret is $R_T \leq \epsilon T + \frac{\ln n}{\epsilon}$. If $T > 4 \ln n$ and $\epsilon = \sqrt{\frac{\ln n}{T}}$, then $R_T \leq 2 \sqrt{T \ln n}$ \\
+\textbf{Lemma 2} If $W_{T+1}$ is small then the offline optimum is large: $W_{T+1} \geq
+(1-\epsilon)^{L*}$ \\
+\textbf{Lemma 3} If the loss suffered by the algorithm is large, then $W_{T+1}$ is small: $W_{T+1} \leq n \cdot \prod_{t=1}^{T}(1 - \epsilon L_t)$ \\
+\textbf{Normalization: }If the loss is in the range $[a, b]$ we define a new set of losses $l'_i^{(t)} = \frac{l_i^{(t)} - a}{b-a}$. With this we can achieve a regret which is at most $2 \cdot (b-a) \cdot \sqrt{T \ln n}$. 
+
+\section*{Follow the Regularized Leader}
+We are given a convex cost function $f$ and the loss at time $t$ is $f_t(x^(t))$. After $t$ steps the regret is $\sum_{t=1}^T f_t(x^{(t)}) - \min_{x \in K} \sum_{t=1}^{T} f_t(x)$. FLTR is a family of algorithms which follow the form $x^{(t)} = \min_{x\in K} \sum_{k=1}^{t-1} f_k(x) + R(x)$ where $R$ is a function which penalizes concentrated strategies ($R$ is unique to each algorithm in the family). \\
+\textbf{Theorem 1: }For every run of FTRL we have $\sum_{t=1}^{T} f_t(x^{(t)}) - \sum_{t=1}^T f_t(x) \leq (\sum_{t=1}^{T} f_t (x^{(t)})) - f_t(x^{(t+1)}) + R(x) - R(x^{(1)})$. Let $Regr_T = \sum_{t=1}^T f_t)x^{(t)} - \min_{x \in K} \sum_{t=1}^{T} f_t(x)$. We know: $Regr_T \leq (\sum_{t=1}^{T} f_t(x^{(t)}) - f_t(x^{(t+1)})) + \max_{x \in K} R(x) - R(x^{(1)})$. \\
+\textbf{Multiplicative Weights:} If we use \textbf{Negative Entropy}, $H(x) = \sum_i x_i \ln \frac{1}{x_i}, R(x) = -cH(x) = c \sum_i x_i \ln x_i$, as the $R$ function, FLRT would generate the Multiplicative Weights algorithm. \\
+\textbf{Gradient Descent:} If we use \textbf{Length-Square Regularization}, $R(x) = c||x||^2 = c \cdot \aum_i x_i^2$, as the $R$ function, FLRT would generate Gradient Descent which starts at a point $x^{(0)} = 0$ and takes a step towards the right direction at each iteration $x^{(t+1)} = x^{(t)} - \frac{1}{2c} \nabla g(x^{(t)})$
+\section*{Streaming}
+Streaming algorithms work under the following constraints (1) we have less than $O(N)$ space (2) we can only access each element in the stream once. \\
+\textbf{Probability} \\
+Union Bound: $P[A \vee B] \leq P[A] + P[B]$ \\
+If $A$ and $B$ are independent: $P[A \vee B] = P[A] \cdot P[B]$ \\
+Expectation: $E[X] = \sum_v P[X=v] \cdot v$ \\
+Linearity: $E[X+Y] = E[X] + E[Y], E[vX] = v \cdot E[X]$ \\
+Product formula, independent variables: $E[XY] = E[X]E[Y]$
+Markov's inequality: $P[X \geq t] \leq \frac{E[X]}{t}$ if $X \geq 0, t > 0$ \\
+Variance: $Var(X) = E[X^2] - E[X]^2$ \\
+Standard Deviation: $\alpha = \sqrt{Var(X)}$ \\
+Chebyshev(CB): $P[|X - E[X]| \geq c \sqrt{Var(X)}] \leq \frac{1}{c^2}$ \\
+CB:$P[|X - E[X]| \geq t] = P[(X - E[X])^2 \geq t^2] \leq \frac{Var(X)}{t^2}$\\
+If $X_1, \ldots, X_n$ are pairwise independent random variables then $Var(X_1 + \ldots + X_n) = Var(X_1) + \ldots + Var(X_n)$ \\
+If $X$ is an independent variable whose only possible values are 0 and 1, then $E[X] = P[X = 1]$ and $Var(X)  = E[X^2] - E[X]^2\leq E[X^2] = E[X] = P[X = 1]$ \\
+\textbf{Sample Random Element in Stream} \\
+\textbf{Theorem 1} (Chernoff/Hoeffding Bound) Suppose $X_1, \ldots X_t$ are identical independently distributed random variables taking values in $\{0, 1\}$. let $p = E[X_i]$ and $\epsilon > 0$, then $P[|\frac{1}{t} \cdot \sum_{i=1}^{t} X_i - p| \geq \epsilon] \leq 2e^{-2 \epsilon^2 t}$. To ensure that $P[Estimate\ has\ an\ error \geq \epsilon] \leq \delta$, we need to set $t = \ceil{\frac{1}{2 \epsilon ^2} \log_e (\frac{2}{\delta})}$. This shows that we only need to sample a constant number of elements to accurately capture the probability (substantially less than polynomial in relation to $n$).\\
+\textbf{Theorem 2} The reservoir sampling algorithm outputs a uniformly random element of the stream (proved inductively). \\
+\setlength{\textfloatsep}{0.1cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Resevoir Sampling, $t$ Elements, no replacement}\label{euclid}
+\begin{algorithmic}[1]
+\State $resevoir[1, \ldots, t] = s[1, \ldots, t]$
+\State for $i = t+1$ to $n$: 
+\Indent 
+\State $r = $random number between $1$ to $i$
+\State if $r \leq t$: 
+\Indent 
+\State $resevoir[r] = s_i$
+\EndIndent
+\EndIndent
+\State Output $resevoir[1, \ldots, t]$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm} 
+\textbf{Finding Number of Distinct Labels} \\
+Let $\sum$ denote the set of all possible stream elements. (1) Pick a hash function $h: \sigma \rightarrow [0, 1]$ (2) Compute the minimum hash value $\alpha = \min_i h(w_i)$ by going over the stream. (3) Output $\frac{1}{\alpha}$. We are assuming that for each element $w \in \sum$, its hash value $h(w)$ is a uniformly random number in $[0, 1]$ independent of all other hash values. \\
+\textbf{Lemma 3} If there are $k$ distinct elements in the stream then $E[\min_i h(w_i)] = \frac{1}{k+1}$. \\
+For this algorithm to be practical it has to be discrete. We assume the hash maps to $\{\frac{1}{N}, \frac{2}{N}, \ldots, 1\}$ instead of $\{0, 1\}$. If $N > \frac{n}{\epsilon}$ then at most $\epsilon$ additional error will be introduced ($n$ is the number of elements in the stream). \\
+\textbf{Definition 4} (Universal Hash Family a.k.a pairwise independent hash family) A family of functions $H = \{h_1, \ldots, h_M\}$ from a domain $\sum$ to a range $R$, is said to be a universal hash family if the following holds: If we pick a hash function $h$ at random from $H$, then on any pair of inputs $x, y \in \sum$, the behaviour of $h$ exactly mimics that of a completely random function. Formally, for all $x \neq y \in \sum$ and $i, j \in R$, $P_{h \in H}[h(x) = i \wedge h(y) = j] = \frac{1}{|R|^2}$\\
+\textbf{Heavy Hitters} 
+Our list will (1) contain all labels that occur $\geq t \cdot n$ times in the stream (2) with probability $\geq 1 - \frac{1}{n}$ contains no label that occurs $\leq (t - \epsilon) \cdot n$ times in the stream. We can compute a number that is with probability $> 0.9$ between $k - \epsilon k$ and $k + \epsilon k$ where $k$ is the number of distinct elements in the stream, using space $O(\epsilon^{-2} \cdot (\log n + \log |\sum|))$. \\
+\textbf{Theorem 1} There is no injective function $C$ that maps all $L$ bit strings to bit strings of length $\leq L - 1$. \\
+\setlength{\textfloatsep}{0.1cm}
+\begin{algorithm}[H]
+\label{alg:quad}
+\caption{Count-Min-Sketch}\label{euclid}
+\begin{algorithmic}[1]
+\State Initialize an $l \times B$ array to all zeroes, $L$ to empty list 
+\State Pick $l$ random functions $h_1, \ldots, h_l$ where $h_i: \sum \rightarrow \{1, \ldots, B\}$
+\State while not end of stream: 
+\Indent 
+\State read a label $x$ from the stream
+\State for $i= 1$ to $l$: 
+\Indent 
+\State $M[i, h_i(x)] += 1$
+\EndIndent
+\State if $\min_{i=1,\ldots,l} M[i, h_i(x)] > 0.3n$ add $x$ to $L$ if not in it 
+\EndIndent
+\State Return $L$
+\end{algorithmic}
+\end{algorithm}
+\setlength{\floatsep}{0.0cm} 
+\section*{NP-Complete Problems}
+\textbf{Search Problems} involve searching for a solution (e.g. Path) among an exponential number of possibilities with a given parameter. Search problems have the property that a solution can be checked for correctness in polynomial time. All search problems are \textbf{NP} though some are solvable in \textbf{P}. A search problem is \textbf{NP-complete} if all other search problems reduce to it (\textbf{NP-Complete} problems can't be solved in $P$ as of today). \\
+\textbf{Reduction} from $A$ to $B$ is a polynomial-time algorithm that transforms any instance $I$ of A into an instance $f(I)$ of $B$. $A \rightarrow B$ denotes reduction from $A$ to $B$. \\
+\textbf{Optimization problems} can be reduced to search problems using binary search (Search can be reduced to optimization too, since optimization algorithms are contingent on the existence of at least one solution). \\
+\textbf{SAT} (Satisfiability) Given a Boolean formula in conjunctive normal form (multiple formulas comprised only of $\neg$ and $\vee$), either output a valid solution (assignment which satisfies all formulas) or that none exist. \\
+\textbf{TSP} (Traveling Salesman Problem) Given a complete weighted undirected graph and a budget $b$, determine if a tour (cycle which covers every node exactly once) of length $\leq b$.\\
+\textbf{Rudrata} Given a weighted undirected graph determine if there exists a path/cycle that visits every vertex once. Path and cycle are interchangeable because they reduce to one another. A very similar problem, Euler's path involves finding a path that passes through edge once (it can be solved in polynomial time since we're considering edges not vertices). \\
+\textbf{Cuts and Bisections} Given a connected graph, split its vertices into two sets $S, T$ such that $|S|, |T| \geq \frac{n}{3}$ (very similar to Max-Flow Min-Cut). \\
+\textbf{ILP} (Integer Linear Programming) Solve a liner programming problem where every value in the solution is an integer.\\
+\textbf{3D Matching} Given $n$ boys, girls, and pets and the compatibility between every set of triplets, can you find $n$ disjoint triplets, every boy, girl, or pet must be part of exactly 1 triplet (This is very similar to bipartite matching).  \\
+\textbf{Independent Set} Given a graph and integer $g$, does there exist a set of $g$ vertices such that no two vertices in the graph have an edge between them.\\
+\textbf{Vertex Cover} Given a graph and an integer $b$ can we select a set of $b$ vertices that "touch" every edge.\\
+\textbf{Clique} Given a graph and a goal $g$, does there exist a set of $g$ vertices where every vertex is adjacent.\\
+\textbf{Longest Path} Given a graph, vertices $s, t$, and a goal $g$ does there exist a simple path from $s$ to $t$ with length $\geq g$. \\
+\textbf{Subset Sum} (Variation of Knapsack) Given a set of integers and a goal $g$, does there exist a subset of this set that sums to $g$.\\
+\textbf{Main Reductions} \\
+All of \textbf{NP} $\rightarrow$ SAT $\rightarrow$ 3SAT $\rightarrow$ Independent Set, 3D Matching\\
+Independent Set $\rightarrow$ Vertex Cover, Clique \\
+3D Matching $\rightarrow$ ZOE \\
+ZOE $\rightarrow$ Subset Sum, Integer LP, Rudrata Cycle\\
+Rudrata Cycle $\rightarrow$ Traveling Salesman Problem \\
+\textbf{How to Reduce} \\ 
+To prove that $A \rightarrow B$ we need to prove (1) If a solution exists for $f(I) \in B$ then a solution for $I \in A$ can be reconstructed from the solution to $f(I) \in B$ (2) if no solution exists for $f(I) \in B$ then no solution exists for $I \in A$. 
+\section*{Coping with NP-Completeness}\\
+\textbf{Backtracking} is the process of traversing the recursion tree (all possibilities) but no longer considers a sub problem is it is clear that the solution is invalid. If the program terminates before finding a solution then no solution exists, otherwise it will return the first solution is encounters. \textbf{Branch and Bound} is the process of running the backtracking even after encountering a valid solution and keeping track of the most optimal valid solution. (Done with a queue in the textbook, so imagine BFS traversal instead of DFS).\\
+\textbf{Vertex Cover Approximation}: we can approximate using a maximal matching (a set of edges with no vertices in common and no more edges can be added). Any maximal matching will act as a lower bound (each edge must be covered by a different vertex). We can select all the endpoints of a maximal matching as a vertex cover with $\alpha_{A} \leq 2$ ($\alpha_{A}= 2$ in worse case). Find maximal matching by iterating over all edges and deciding whether to include or not on each.\\
+\textbf{Clustering Approximation} pick first point, $\mu_1$ randomly and pick every other point such that it maximizes $\min_{j < i}d(\mu_i, \mu_j)$. Have $\mu_i$ be cluster centroid and gather all other points around them (assign each point to it's closest centroid). $\alpha_{A} \leq 2$ ($\alpha_{A}= 2$ in worse case). \\
+\textbf{TSP Approximation} If graph follows metric properties (e.g. real life cities) we can achieve $\alpha_{A} \leq 2$ by first finding the MST of the graph. Travel from one end of the diameter to the other and back visiting every edge twice (including branches) to visit every node once. Modify path by skipping cities path is about to revisit. This can be optimized to $\alpha_{A} \leq 1.5$. If the graph doesn't follow metric properties no efficient approximation exists.  \\
+\textbf{Knapsack Approximation} Re-scale all the values $v_i = v_i \cdot \frac{n}{\epsilon v_{max}}$ then run knapsack. Runs in $O(n^3/\epsilon)$ time and guarantees $(1 - \epsilon)$ of the optimal value.\\
+\textbf{Approximation Hierarchy} \\ 
+(1)No approximation ratio is possible e.g. TSP (2) approximation ratio is possible, but limited e.g. Vertex Cover, k-Cluster (3) approximation ratio possible with no limits, error ratios arbitrarily close to 0, e.g. Knapsack (4) approximation ratio of about $\log n$ e.g. Set Cover. \\
+
+\end{multicols} 
+\end{document}
